@@ -5,7 +5,7 @@ terraform {
   required_providers {
     azurerm = {
       source  = "hashicorp/azurerm"
-      version = ">= 3.20.0"  # Asegúrate de usar una versión que soporte Availability Zones
+      version = ">= 3.20.0" 
     }
   }
   required_version = ">= 1.1.0"
