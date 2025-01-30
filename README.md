@@ -45,8 +45,7 @@ Antes de comenzar, asegúrate de cumplir con estos requisitos:
    ```bash/Powershell
    terraform init
    terraform plan
-   terraform apply ```
-
+   terraform apply 
 🛠️ Estado de Desarrollo
 ⚠️ Advertencia: Este proyecto está en desarrollo activo.
 
