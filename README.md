@@ -11,7 +11,6 @@
 - [Características](#características)
 - [Prerrequisitos](#prerrequisitos)
 - [Instalación](#instalación)
-- [Estructura del Repositorio](#estructura-del-repositorio)
 - [Estado de Desarrollo](#estado-de-desarrollo)
 - [Mejoras Futuras](#mejoras-futuras)
 
@@ -41,30 +40,21 @@ Antes de comenzar, asegúrate de cumplir con estos requisitos:
    ```bash
    git clone https://github.com/williamsmedina/brainhack-ad.git
    cd brainhack-ad
-Inicializa Terraform
+   ```
+   Inicializa Terraform, haz el plan y aplica
+   ```bash/Powershell
+   terraform init
+   terraform plan
+   terraform apply
 
-bash
-Copy
-terraform init
-Configura Variables
-Edita terraform.tfvars para definir tu región, prefijo de recursos y credenciales.
-
-📂 Estructura del Repositorio
-Copy
-brainhack-ad/
-├── main.tf          # Configuración principal de Terraform
-├── variables.tf     # Variables personalizables
-├── outputs.tf       # Salidas útiles (IPs, nombres)
-├── README.md        # Este archivo
-└── terraform.tfvars # Configuración de variables (ignorado por Git)
 
 🛠️ Estado de Desarrollo
 ⚠️ Advertencia: Este proyecto está en desarrollo activo.
 
-Funcionalidades actuales: Despliegue básico de servidor, cliente, Kali Linux (todavía no lo logro hacer andar, y red segura.
+Funcionalidades actuales: Despliegue básico de servidor, cliente, Kali Linux, y red segura.
 
-Pendientes: Configuración automatizada de vulnerabilidades, integración con Active Directory.
+Pendientes: creación de dominio, ou's y usuarios, configuración automatizada de vulnerabilidades, integración con Active Directory.
 
-🔮 Mejoras Futuras.
+🔮 Mejoras Futuras
 
 Implementar escenarios guiados para pruebas de penetración.
