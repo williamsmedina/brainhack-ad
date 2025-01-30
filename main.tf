@@ -184,10 +184,9 @@ resource "azurerm_windows_virtual_machine" "vm_w10" {
   source_image_reference {
     publisher = "MicrosoftWindowsDesktop"
     offer     = "Windows-10"
-    sku       = "20h2-ent"   # Ajustar según disponibilidad en la Zona 3
+    sku       = "20h2-ent"   
     version   = "latest"
   }
-
   os_disk {
     name                 = "disk-os-w10"
     caching              = "ReadWrite"
@@ -199,9 +198,14 @@ resource "azurerm_windows_virtual_machine" "vm_w10" {
     environment = "brainhack-lab"
   }
 }
-
 # 3) Kali Linux (vm-kali)
+resource "azurerm_marketplace_agreement" "kali_marketplace_agreement" {
+  publisher = "kali-linux"
+  offer     = "kali"
+  plan      = "kali-2024-2"
+}
 resource "azurerm_linux_virtual_machine" "vm_kali" {
+  depends_on = [ azurerm_marketplace_agreement.kali_marketplace_agreement ]
   name                  = "vm-kali"
   resource_group_name   = azurerm_resource_group.rg_lab.name
   location              = azurerm_resource_group.rg_lab.location
@@ -218,10 +222,11 @@ resource "azurerm_linux_virtual_machine" "vm_kali" {
     sku       = "kali-2024-2"
     version   = "latest"
   }
-    plan                    {
-    name      = "kali"
-    product   = "kali-linux"
-    publisher = "kali-linux"
+
+plan {
+    name      = "kali-2024-2"  
+    product   = "kali"          
+    publisher = "kali-linux"    
   }
   os_disk {
     name                 = "disk-os-kali"
