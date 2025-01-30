@@ -1,7 +1,7 @@
 variable "location" {
   type        = string
   description = "Ubicación/Región de Azure (por ejemplo, eastus, westus, etc.)"
-  default     = "eastus"  # Asegúrate de que esta región soporte Availability Zones
+  default     = "eastus" 
 }
 
 variable "resource_group_name" {
