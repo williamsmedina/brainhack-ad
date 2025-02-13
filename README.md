@@ -4,22 +4,24 @@
 **Terraform Azure En Desarrollo**
 
 ## 📄 Tabla de Contenidos
-- [Introducción](#introducción)
-- [Características](#características)
-- [Prerrequisitos](#prerrequisitos)
-- [Instalación](#instalación)
-- [Acciones Post-Despliegue](#acciones-post-despliegue)
-- [Estado de Desarrollo](#estado-de-desarrollo)
-- [Mejoras Futuras](#mejoras-futuras)
+- [brainhack-ad](#brainhack-ad)
+- [Despliegue de Laboratorio Vulnerable de AD en Azure con Terraform](#despliegue-de-laboratorio-vulnerable-de-ad-en-azure-con-terraform)
+  - [📄 Tabla de Contenidos](#-tabla-de-contenidos)
+  - [Introducción](#introducción)
+  - [Características](#características)
+  - [⚙️ Prerrequisitos](#️-prerrequisitos)
+  - [🛠 Instalación](#-instalación)
+  - [🔧 Acciones Post-Despliegue](#-acciones-post-despliegue)
+  - [Configurar AD (OUs y Usuarios):](#configurar-ad-ous-y-usuarios)
+  - [🛠️ En estado de desarrollo](#️-en-estado-de-desarrollo)
+  - [Qué tengo que hacer ahora?](#qué-tengo-que-hacer-ahora)
 
-## 🎉 Introducción
+## Introducción
 Bienvenido a este repositorio de **Despliegue de Laboratorio Vulnerable de AD en Azure con Terraform**.  
 Este proyecto utiliza Terraform para desplegar un entorno vulnerable de Active Directory en Azure, ideal para prácticas de ciberseguridad y pruebas de penetración.
 
-## ✨ Características
+## Características
 - **Despliegue Automatizado:** Provisiona máquinas Windows Server 2016 (DC), Windows 10 y Kali Linux.
-- **Acceso Seguro:** Utiliza Azure Bastion para RDP/SSH sin exponer puertos.
-- **Seguridad de Red:** Configuración de NSG para controlar el tráfico.
 
 ## ⚙️ Prerrequisitos
 - **Terraform** (>= 1.1.0)
@@ -38,8 +40,9 @@ Inicializa Terraform y aplica:
       terraform plan
       terraform apply
 
-🔧 Acciones Post-Despliegue
-Promover el Domain Controller:
+## 🔧 Acciones Post-Despliegue
+
+**Promover el Domain Controller:**
 
 Conéctate a la máquina Windows Server 2016.
 Ejecuta **subir-a-dominio.ps1** (con privilegios de administrador).
@@ -51,10 +54,14 @@ Después del reinicio, vuelve a acceder al DC.
 Ejecuta **CrearOUsUsuarios.ps1** (con privilegios de administrador).
 Este script genera la contraseña para usuarios en user-passwords.txt y crea las OUs y 3 usuarios genéricos en cada sub-OU de "Areas".
 
-🛠️ Estado de Desarrollo
-⚠️ Proyecto en desarrollo activo.
-Actualmente se despliegan servidor, cliente, Kali Linux y red segura, junto con la configuración inicial de AD.
+## 🛠️ En estado de desarrollo
+⚠️ Estoy armando esto de a poco hasta que sea un entorno medianamente decente para pruebas
+Actualmente se despliegan servidor, cliente, Kali Linux y la red entre ellos, junto con la configuración inicial de AD.
 
-🔮 Mejoras Futuras
-Automatizar la ejecución de scripts post-despliegue.
-Ampliar escenarios de vulnerabilidad.
+## Qué tengo que hacer ahora?
+- Script para configuración de un entorno vulnerable de AD
+- Incluir a la PC con Windows 10 en el dominio (o por lo menos contarte cómo se hace aunque hay mucho por ahí)
+- Explicar como configurar RDP en Kali Linux
+- Explicar escenarios de ataque para probar
+
+Espero que esto te sirva para aprender y disfrutar un poco.
