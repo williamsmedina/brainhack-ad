@@ -1,58 +1,60 @@
 # brainhack-ad
-# Despliegue de Laboratorio Vulnerable de AD en Azure con Terraform
 
-![Terraform](https://img.shields.io/badge/Terraform-1.3.0-blue.svg)
-![Azure](https://img.shields.io/badge/Azure-Active-blue.svg)
-![En Desarrollo](https://img.shields.io/badge/Estado-En%20Desarrollo-yellow.svg)
+# Despliegue de Laboratorio Vulnerable de AD en Azure con Terraform
+**Terraform Azure En Desarrollo**
 
 ## 📄 Tabla de Contenidos
-
 - [Introducción](#introducción)
 - [Características](#características)
 - [Prerrequisitos](#prerrequisitos)
 - [Instalación](#instalación)
+- [Acciones Post-Despliegue](#acciones-post-despliegue)
 - [Estado de Desarrollo](#estado-de-desarrollo)
 - [Mejoras Futuras](#mejoras-futuras)
 
 ## 🎉 Introducción
-
-Bienvenido a este repositorio de **Despliegue de Laboratorio Vulnerable de AD en Azure con Terraform**! Este proyecto utiliza **Terraform** para automatizar el despliegue de un entorno vulnerable de Directorio Activo (AD) en **Microsoft Azure**. El laboratorio está diseñado para que entusiastas de la ciberseguridad, estudiantes y profesionales practiquen y mejoren sus habilidades de pruebas de penetración y defensa en un entorno controlado y aislado.
+Bienvenido a este repositorio de **Despliegue de Laboratorio Vulnerable de AD en Azure con Terraform**.  
+Este proyecto utiliza Terraform para desplegar un entorno vulnerable de Active Directory en Azure, ideal para prácticas de ciberseguridad y pruebas de penetración.
 
 ## ✨ Características
-
-- **Despliegue Automatizado**: Provisiona máquinas de Windows Server 2016 (como controlador de AD), cliente Windows 10 y Kali Linux en Azure.
-- **Acceso Seguro**: Utiliza **Azure Bastion** para acceso seguro vía RDP/SSH sin exponer puertos a internet.
-- **Seguridad de Red**: Configuración de **Grupos de Seguridad de Red (NSG)** para controlar tráfico entrante/saliente.
+- **Despliegue Automatizado:** Provisiona máquinas Windows Server 2016 (DC), Windows 10 y Kali Linux.
+- **Acceso Seguro:** Utiliza Azure Bastion para RDP/SSH sin exponer puertos.
+- **Seguridad de Red:** Configuración de NSG para controlar el tráfico.
 
 ## ⚙️ Prerrequisitos
-
-Antes de comenzar, asegúrate de cumplir con estos requisitos:
-
-- **Terraform**: Instalado (versión >= 1.1.0)
-- **Azure CLI**: Instalado y autenticado
-- **Suscripción de Azure**: Suscripción activa con permisos para crear recursos
-- **Git**: Instalado para control de versiones (opcional)
+- **Terraform** (>= 1.1.0)
+- **Azure CLI** (autenticado)
+- **Suscripción de Azure** activa
+- **Git** (opcional)
 
 ## 🛠 Instalación
-
-1. **Clona el Repositorio**
-
+1. Clona el repositorio:
    ```bash
-   git clone https://github.com/williamsmedina/brainhack-ad.git
-   cd brainhack-ad
-   ```
-   Inicializa Terraform, haz el plan y aplica
-   ```bash/Powershell
-   terraform init
-   terraform plan
-   terraform apply 
+      git clone https://github.com/williamsmedina/brainhack-ad.git
+      cd brainhack-ad
+Inicializa Terraform y aplica:
+ 
+      terraform init
+      terraform plan
+      terraform apply
+
+🔧 Acciones Post-Despliegue
+Promover el Domain Controller:
+
+Conéctate a la máquina Windows Server 2016.
+Ejecuta PromoverDC.ps1 (con privilegios de administrador).
+Este script genera la contraseña de disaster recovery en disaster-recovery-password.txt y promueve el servidor a DC, reiniciándolo al finalizar.
+
+## Configurar AD (OUs y Usuarios):
+
+Después del reinicio, vuelve a acceder al DC.
+Ejecuta CrearOUsUsuarios.ps1 (con privilegios de administrador).
+Este script genera la contraseña para usuarios en user-passwords.txt y crea las OUs y 3 usuarios genéricos en cada sub-OU de "Areas".
+
 🛠️ Estado de Desarrollo
-⚠️ Advertencia: Este proyecto está en desarrollo activo.
-
-Funcionalidades actuales: Despliegue básico de servidor, cliente, Kali Linux, y red segura.
-
-Pendientes: creación de dominio, ou's y usuarios, configuración automatizada de vulnerabilidades, integración con Active Directory.
+⚠️ Proyecto en desarrollo activo.
+Actualmente se despliegan servidor, cliente, Kali Linux y red segura, junto con la configuración inicial de AD.
 
 🔮 Mejoras Futuras
-
-Implementar escenarios guiados para pruebas de penetración.
+Automatizar la ejecución de scripts post-despliegue.
+Ampliar escenarios de vulnerabilidad.
