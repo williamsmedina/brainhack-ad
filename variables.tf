@@ -1,7 +1,7 @@
 variable "location" {
   type        = string
   description = "Ubicación/Región de Azure (por ejemplo, eastus, westus, etc.)"
-  default     = "eastus" 
+  default     = "eastus"  
 }
 
 variable "resource_group_name" {
@@ -10,38 +10,14 @@ variable "resource_group_name" {
   default     = "rg-brainhack-lab"
 }
 
-# Credenciales para Windows Server 2016 (vm-ad)
-variable "admin_username_ad" {
+# Credenciales únicas para las 3 VMs
+variable "admin_username" {
   type        = string
-  description = "Usuario administrador para el Windows Server 2016"
+  description = "Usuario administrador para todas las VMs"
 }
 
-variable "admin_password_ad" {
+variable "admin_password" {
   type        = string
-  description = "Password administrador para el Windows Server 2016"
-  sensitive   = true
-}
-
-# Credenciales para Windows 10 (vm-w10)
-variable "admin_username_w10" {
-  type        = string
-  description = "Usuario administrador para el Windows 10"
-}
-
-variable "admin_password_w10" {
-  type        = string
-  description = "Password administrador para el Windows 10"
-  sensitive   = true
-}
-
-# Credenciales para Kali (vm-kali)
-variable "admin_username_kali" {
-  type        = string
-  description = "Usuario administrador para la máquina Kali Linux"
-}
-
-variable "admin_password_kali" {
-  type        = string
-  description = "Password administrador para la máquina Kali Linux"
+  description = "Password administrador para todas las VMs"
   sensitive   = true
 }

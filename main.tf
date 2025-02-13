@@ -1,11 +1,10 @@
-############################################################
 # main.tf
-############################################################
+
 terraform {
   required_providers {
     azurerm = {
       source  = "hashicorp/azurerm"
-      version = ">= 3.20.0" 
+      version = ">= 3.20.0"  
     }
   }
   required_version = ">= 1.1.0"
@@ -15,17 +14,15 @@ provider "azurerm" {
   features {}
 }
 
-#########################
 # RESOURCE GROUP
-#########################
+
 resource "azurerm_resource_group" "rg_lab" {
   name     = var.resource_group_name
   location = var.location
 }
 
-#########################
 # VIRTUAL NETWORK & SUBNETS
-#########################
+
 resource "azurerm_virtual_network" "vnet_lab" {
   name                = "vnet-brainhack-lab"
   location            = azurerm_resource_group.rg_lab.location
@@ -40,66 +37,34 @@ resource "azurerm_subnet" "lab_subnet" {
   address_prefixes     = ["10.10.10.0/25"]
 }
 
-resource "azurerm_subnet" "bastion_subnet" {
-  name                 = "AzureBastionSubnet"
-  resource_group_name  = azurerm_resource_group.rg_lab.name
-  virtual_network_name = azurerm_virtual_network.vnet_lab.name
-  address_prefixes     = ["10.10.10.128/27"]
-}
+# PUBLIC IPs para cada VM
 
-#########################
-# BASTION HOST
-#########################
-resource "azurerm_public_ip" "bastion_pip" {
-  name                = "pip-bastion-brainhack"
-  resource_group_name = azurerm_resource_group.rg_lab.name
+resource "azurerm_public_ip" "pip_ad" {
+  name                = "pip-ad-brainhack"
   location            = azurerm_resource_group.rg_lab.location
-  sku                 = "Standard"
+  resource_group_name = azurerm_resource_group.rg_lab.name
   allocation_method   = "Static"
-}
-
-resource "azurerm_bastion_host" "bastion" {
-  name                = "bastion-brainhack"
-  resource_group_name = azurerm_resource_group.rg_lab.name
-  location            = azurerm_resource_group.rg_lab.location
   sku                 = "Standard"
-
-  ip_configuration {
-    name                 = "ipconf-bastion"
-    subnet_id            = azurerm_subnet.bastion_subnet.id
-    public_ip_address_id = azurerm_public_ip.bastion_pip.id
-  }
 }
 
-#########################
-# NETWORK SECURITY GROUP
-#########################
-resource "azurerm_network_security_group" "nsg_lab" {
-  name                = "nsg-brainhack-lab"
+resource "azurerm_public_ip" "pip_w10" {
+  name                = "pip-w10-brainhack"
   location            = azurerm_resource_group.rg_lab.location
   resource_group_name = azurerm_resource_group.rg_lab.name
-
-  security_rule {
-    name                       = "AllowOutboundInternet"
-    priority                   = 100
-    direction                  = "Outbound"
-    access                     = "Allow"
-    protocol                   = "*"
-    source_port_range          = "*"
-    destination_port_range     = "*"
-    source_address_prefix      = "*"
-    destination_address_prefix = "Internet"
-  }
+  allocation_method   = "Static"
+  sku                 = "Standard"
 }
 
-resource "azurerm_subnet_network_security_group_association" "lab_subnet_association" {
-  subnet_id                 = azurerm_subnet.lab_subnet.id
-  network_security_group_id = azurerm_network_security_group.nsg_lab.id
+resource "azurerm_public_ip" "pip_kali" {
+  name                = "pip-kali-brainhack"
+  location            = azurerm_resource_group.rg_lab.location
+  resource_group_name = azurerm_resource_group.rg_lab.name
+  allocation_method   = "Static"
+  sku                 = "Standard"
 }
 
-#########################
-# NICs para las VMs
-#########################
+# NETWORK INTERFACES para las VMs (con su respectiva IP pública)
+
 resource "azurerm_network_interface" "nic_ad" {
   name                = "nic-ad"
   location            = azurerm_resource_group.rg_lab.location
@@ -109,6 +74,7 @@ resource "azurerm_network_interface" "nic_ad" {
     name                          = "ipconfig-ad"
     subnet_id                     = azurerm_subnet.lab_subnet.id
     private_ip_address_allocation = "Dynamic"
+    public_ip_address_id          = azurerm_public_ip.pip_ad.id
   }
 }
 
@@ -121,6 +87,7 @@ resource "azurerm_network_interface" "nic_w10" {
     name                          = "ipconfig-w10"
     subnet_id                     = azurerm_subnet.lab_subnet.id
     private_ip_address_allocation = "Dynamic"
+    public_ip_address_id          = azurerm_public_ip.pip_w10.id
   }
 }
 
@@ -133,12 +100,100 @@ resource "azurerm_network_interface" "nic_kali" {
     name                          = "ipconfig-kali"
     subnet_id                     = azurerm_subnet.lab_subnet.id
     private_ip_address_allocation = "Dynamic"
+    public_ip_address_id          = azurerm_public_ip.pip_kali.id
+  }
+}
+# NSGs para cada VM
+
+
+# NSG para vm-ad (Windows Server 2016) - Permite RDP en puerto 3390
+resource "azurerm_network_security_group" "nsg_ad" {
+  name                = "nsg-ad"
+  location            = azurerm_resource_group.rg_lab.location
+  resource_group_name = azurerm_resource_group.rg_lab.name
+
+  security_rule {
+    name                       = "Allow-RDP-3389"
+    priority                   = 100
+    direction                  = "Inbound"
+    access                     = "Allow"
+    protocol                   = "Tcp"
+    source_port_range          = "*"
+    destination_port_range     = "3389"
+    source_address_prefix      = "*"
+    destination_address_prefix = "*"
   }
 }
 
-#########################
+# NSG para vm-w10 (Windows 10) - Permite RDP en puerto 3390
+resource "azurerm_network_security_group" "nsg_w10" {
+  name                = "nsg-w10"
+  location            = azurerm_resource_group.rg_lab.location
+  resource_group_name = azurerm_resource_group.rg_lab.name
+
+  security_rule {
+    name                       = "Allow-RDP-3389"
+    priority                   = 100
+    direction                  = "Inbound"
+    access                     = "Allow"
+    protocol                   = "Tcp"
+    source_port_range          = "*"
+    destination_port_range     = "3389"
+    source_address_prefix      = "*"
+    destination_address_prefix = "*"
+  }
+}
+
+# NSG para vm-kali (Linux) - Permite SSH en puerto 623 y RDP en puerto 3390
+resource "azurerm_network_security_group" "nsg_kali" {
+  name                = "nsg-kali"
+  location            = azurerm_resource_group.rg_lab.location
+  resource_group_name = azurerm_resource_group.rg_lab.name
+
+  security_rule {
+    name                       = "Allow-SSH-23"
+    priority                   = 100
+    direction                  = "Inbound"
+    access                     = "Allow"
+    protocol                   = "Tcp"
+    source_port_range          = "*"
+    destination_port_range     = "23"
+    source_address_prefix      = "*"
+    destination_address_prefix = "*"
+  }
+
+  security_rule {
+    name                       = "Allow-RDP-3389"
+    priority                   = 110
+    direction                  = "Inbound"
+    access                     = "Allow"
+    protocol                   = "Tcp"
+    source_port_range          = "*"
+    destination_port_range     = "3389"
+    source_address_prefix      = "*"
+    destination_address_prefix = "*"
+  }
+}
+
+
+# ASOCIACIONES NSG a las NICs
+
+resource "azurerm_network_interface_security_group_association" "nic_assoc_ad" {
+  network_interface_id      = azurerm_network_interface.nic_ad.id
+  network_security_group_id = azurerm_network_security_group.nsg_ad.id
+}
+
+resource "azurerm_network_interface_security_group_association" "nic_assoc_w10" {
+  network_interface_id      = azurerm_network_interface.nic_w10.id
+  network_security_group_id = azurerm_network_security_group.nsg_w10.id
+}
+
+resource "azurerm_network_interface_security_group_association" "nic_assoc_kali" {
+  network_interface_id      = azurerm_network_interface.nic_kali.id
+  network_security_group_id = azurerm_network_security_group.nsg_kali.id
+}
+
 # MAQUINAS VIRTUALES
-#########################
 
 # 1) Windows Server 2016 (vm-ad)
 resource "azurerm_windows_virtual_machine" "vm_ad" {
@@ -146,8 +201,8 @@ resource "azurerm_windows_virtual_machine" "vm_ad" {
   resource_group_name   = azurerm_resource_group.rg_lab.name
   location              = azurerm_resource_group.rg_lab.location
   size                  = "Standard_B2s"
-  admin_username        = var.admin_username_ad
-  admin_password        = var.admin_password_ad
+  admin_username        = var.admin_username
+  admin_password        = var.admin_password
   network_interface_ids = [azurerm_network_interface.nic_ad.id]
 
   # Imagen Windows Server 2016
@@ -176,11 +231,11 @@ resource "azurerm_windows_virtual_machine" "vm_w10" {
   resource_group_name   = azurerm_resource_group.rg_lab.name
   location              = azurerm_resource_group.rg_lab.location
   size                  = "Standard_B2s"
-  admin_username        = var.admin_username_w10
-  admin_password        = var.admin_password_w10
+  admin_username        = var.admin_username
+  admin_password        = var.admin_password
   network_interface_ids = [azurerm_network_interface.nic_w10.id]
 
-  # Imagen Windows 10 Ajustada
+  # Imagen Windows 10 
   source_image_reference {
     publisher = "MicrosoftWindowsDesktop"
     offer     = "Windows-10"
@@ -210,8 +265,8 @@ resource "azurerm_linux_virtual_machine" "vm_kali" {
   resource_group_name   = azurerm_resource_group.rg_lab.name
   location              = azurerm_resource_group.rg_lab.location
   size                  = "Standard_B2s"
-  admin_username        = var.admin_username_kali
-  admin_password        = var.admin_password_kali
+  admin_username        = var.admin_username
+  admin_password        = var.admin_password
   network_interface_ids = [azurerm_network_interface.nic_kali.id]
   disable_password_authentication = false
 
@@ -239,19 +294,5 @@ plan {
     environment = "brainhack-lab"
   }
 
-  # Provisioner para Instalar Herramientas de Kali (Opcional, solo si la imagen no viene con ellas)
-  provisioner "remote-exec" {
-    inline = [
-      "sudo apt update",
-      "sudo apt install -y kali-linux-default"
-    ]
-
-    connection {
-      type     = "ssh"
-      user     = var.admin_username_kali
-      password = var.admin_password_kali
-      host     = azurerm_linux_virtual_machine.vm_kali.private_ip_address
-    }
-  }
 }
 
