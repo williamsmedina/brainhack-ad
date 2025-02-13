@@ -42,13 +42,13 @@ Inicializa Terraform y aplica:
 Promover el Domain Controller:
 
 Conéctate a la máquina Windows Server 2016.
-Ejecuta PromoverDC.ps1 (con privilegios de administrador).
+Ejecuta **subir-a-dominio.ps1** (con privilegios de administrador).
 Este script genera la contraseña de disaster recovery en disaster-recovery-password.txt y promueve el servidor a DC, reiniciándolo al finalizar.
 
 ## Configurar AD (OUs y Usuarios):
 
 Después del reinicio, vuelve a acceder al DC.
-Ejecuta CrearOUsUsuarios.ps1 (con privilegios de administrador).
+Ejecuta **CrearOUsUsuarios.ps1** (con privilegios de administrador).
 Este script genera la contraseña para usuarios en user-passwords.txt y crea las OUs y 3 usuarios genéricos en cada sub-OU de "Areas".
 
 🛠️ Estado de Desarrollo
